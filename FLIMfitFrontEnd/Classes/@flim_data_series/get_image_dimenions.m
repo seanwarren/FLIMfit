@@ -1,4 +1,4 @@
-function ret = get_image_params( file, session,)
+function [dim, data] = get_image_dimensions( file, session)
 
 % find the image size & type from a file
 
@@ -26,35 +26,39 @@ function ret = get_image_params( file, session,)
     % and The Wellcome Trust through a grant entitled 
     % "The Open Microscopy Environment: Image Informatics for Biological Sciences" (Ref: 095931).
 
-
+    if nargin ==1 
+        session = [];       % session NA for files (OMERO only)
+    end
     
-    ret = [];    
     
-     s = [];
+    dim = [];    
+    
      
+     
+     [~,name,ext] = fileparts(file)
      
      % find no of channels
-     [n_chan, chan_info] = get_channels(file);
+     [n_chan, chan_info] = flim_data_series.get_channels(file);
      
-     [~,name,ext] = fileparts(file);
-    
      
-     if isempty(strfind(ext,'tif'))
-        ret.FLIM_type = 'widefield';
+  
+     if ~isempty(strfind(ext,'tif'))
+        dim.FLIM_type = 'widefield';
+        
      else
-        ret.FLIM_type = 'TCSPC';        
+        dim.FLIM_type = 'TCSPC';        
      end
         
-     % Load first folder to get sizes etc. 
-     %(Inneficient! TBD find a better way)
+     % Load first file/folder to get sizes etc. 
      
-     [ret.delays,data,t_int] = load_flim_file(file); 
-     data_size = size(data);
      
-     ret.sizeX = data_size(2);
-     ret.sizeY = data_size(3);
+     [dim.delays,data,t_int] = load_flim_file(file); 
+     data_size = size(data)
      
-     ret.modulo = []; % NA for files
+     dim.sizeX = data_size(end -1);
+     dim.sizeY = data_size(end);
+     
+     dim.modulo = []; % NA for files
         
      
     
