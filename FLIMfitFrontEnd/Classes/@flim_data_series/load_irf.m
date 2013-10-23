@@ -35,17 +35,15 @@ function load_irf(obj,file,load_as_image)
    
     else
 
-        if strcmp(obj.mode,'TCSPC')
-            channel = obj.request_channels(obj.polarisation_resolved);
-        else
-            channel = 1;
-        end
+        
+        [ZCT, block] = obj.request_planes(file, obj.polarisation_resolved, []);
+        channel = ZCT{2};
 
         if nargin < 3
             load_as_image = false;
         end
 
-        [t_irf,irf_image_data] = load_flim_file(file,channel);    
+        [t_irf,irf_image_data] = load_flim_file(file,channel,block);    
         irf_image_data = double(irf_image_data);
 
         % Sum over pixels

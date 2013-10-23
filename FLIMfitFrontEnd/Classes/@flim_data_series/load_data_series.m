@@ -50,14 +50,7 @@ function load_data_series(obj,root_path,mode,polarisation_resolved,data_setting_
     
     if strcmp(mode,'TCSPC')
 
-        if isempty(channel)
-            [channel,block] = obj.request_channels(polarisation_resolved);
-        end
-        obj.channels = channel;
-        if isempty(block)
-            block = 1;
-        end
-        obj.block = block;
+        
        
         files = [dir([root_path '*.sdt']); dir([root_path '*.txt']); dir([root_path '*.ome.tif'])];            
         n_datasets = length(files);
@@ -83,6 +76,18 @@ function load_data_series(obj,root_path,mode,polarisation_resolved,data_setting_
         for i=1:n_datasets
             obj.file_names{i} = [root_path obj.file_names{i}];
         end
+        
+        % find which planes & channels/s to load
+        if isempty(channel)
+            [ZCT,block] = obj.request_planes(obj.file_names{1}, polarisation_resolved, []);
+        end
+        channel = ZCT{2};
+        obj.channels = channel;
+        
+        if isempty(block)
+            block = 1;
+        end
+        obj.block = block;
         
         % open first file
         [obj.t,data,obj.t_int] = load_flim_file(obj.file_names{1},channel,block);         

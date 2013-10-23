@@ -192,8 +192,12 @@ classdef flim_data_series < handle & h5_serializer
     
     methods(Static)
         
+        
         data = smooth_flim_data(data,extent,mode)
-        [n_chan, chan_info] = get_channels(FileName)
+        [n_chan, chan_info no_of_blocks] = get_channels(FileName)
+        
+        [dim, data] = get_image_dimensions( file, session)
+
              
         function data = ensure_correct_dimensionality(data)
             %> Ensure that data has singleton dimension for polarisation
@@ -203,29 +207,37 @@ classdef flim_data_series < handle & h5_serializer
             end
         end
         
-        function [channel,block] = request_channels(polarisation_resolved)
-            %> Request which channels to use from dataset via dialog box
-            if polarisation_resolved
-                dlgTitle = 'Select channels';
-                prompt = {'Parallel Channel ';'Perpendicular Channel ';'Block '};
-                defaultvalues = {'1','2','0'};
-                numLines = 1;
-                inputdata = inputdlg(prompt,dlgTitle,numLines,defaultvalues);
-                ret = str2double(inputdata);
-                channel = uint32(ret(1:2));
-                block = ret(3);
+        function [ZCT, block] = request_planes(file, polarisation_resolved, ZCT)
+            % Request which planes and channels to use from dataset via dialog box
+            % Determine which channels we need to load 
+            if ~isempty(ZCT)
+                channel = ZCT{2};
             else
-                dlgTitle = 'Select channel';
-                prompt = {'Channel ','Block '};
-                defaultvalues = {'1','0'};
-                numLines = 1;
-                inputdata = inputdlg(prompt,dlgTitle,numLines,defaultvalues);
-                ret = str2double(inputdata);
-                channel = uint32(ret(1));
-                block = ret(2);
+                channel = [];
             end
-       end
-        
+            
+            if isempty(channel)
+                [n_channels_present channel_info no_of_blocks] = flim_data_series.get_channels(file);
+                if n_channels_present >1 | no_of_blocks >1
+                    ret = CB_selection([n_channels_present no_of_blocks], polarisation_resolved );
+                    ZCT{2} = ret{1};
+                    block = ret{2};
+                else
+                    ZCT{2} = 1;
+                    block = 1;
+                end
+            end
+            
+            % future-proofing for multi-plane files 
+            %Z = ZCT{1};
+            %T = ZCT{3}
+            %if isempty(Z) | isempty(T)
+                % get no of planes in image
+                % TBD
+                % ZCT = ZT_selection([ Z T ], [ Z T ] , [ 1 1]);
+            %end
+        end
+                     
     end
     
     methods

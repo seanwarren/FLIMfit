@@ -26,6 +26,8 @@ function load_single(obj,file,polarisation_resolved,data_setting_file,channel)
 
     % Author : Sean Warren
     
+   
+    
     [path,name,ext] = fileparts(file);
 
     if strcmp(ext,'.raw')
@@ -49,23 +51,16 @@ function load_single(obj,file,polarisation_resolved,data_setting_file,channel)
     
     obj.root_path = ensure_trailing_slash(path);    
     
-    % Determine which channels we need to load 
-    if (strcmp(ext,'.sdt') || strcmp(ext,'.txt')) && isempty(channel)
-        if polarisation_resolved
-            channel = obj.request_channels(polarisation_resolved);
-        else
-            [n_channels_present channel_info] = obj.get_channels(file);
-            if n_channels_present > 1
-                [obj.names,channel] = dataset_selection(channel_info);
-                obj.load_multiple_channels = true;
-            else 
-                channel = 1;
-            end
-        end
+    % Determine which planes we need to load 
+    [ZCT, block] = obj.request_planes(file, obj.polarisation_resolved, []);
+    channel = ZCT{2};
+
+   
+    if length(channel) > 1
+        obj.load_multiple_channels = true;
     end
-    
-    % Load data file
-    [obj.t,data,obj.t_int] = load_flim_file(file,channel);
+        
+   
     
     if ~strcmp(ext,'.raw')
         if strcmp(ext,'.sdt') || strcmp(ext,'.txt') ||  strcmp(ext,'.asc') || strcmp(ext,'.irf') || strcmp(file(end-7:end),'.ome.tif')
@@ -93,6 +88,10 @@ function load_single(obj,file,polarisation_resolved,data_setting_file,channel)
     obj.n_datasets = length(obj.names);
     
     obj.polarisation_resolved = polarisation_resolved;
+    
+    % open first file to get size etc
+    [obj.t,data,obj.t_int] = load_flim_file(obj.file_names{1},channel,block);         
+    
    
     data = obj.ensure_correct_dimensionality(data);
     obj.data_size = size(data);

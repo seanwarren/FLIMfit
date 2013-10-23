@@ -33,12 +33,13 @@ function load_tvb(obj,file)
     else
 
         if strcmp(obj.mode,'TCSPC')
-            channel = obj.request_channels(obj.polarisation_resolved);
+            [ZCT, block] = obj.request_planes(file, obj.polarisation_resolved, []);
+            channel = ZCT{2};
         else
             channel = 1;
         end
 
-        [t_tvb,tvb_data] = load_flim_file(file,channel);    
+        [t_tvb,tvb_data] = load_flim_file(file,channel,block);    
         tvb_data = double(tvb_data);
 
         % Sum over pixels

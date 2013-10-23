@@ -1,4 +1,4 @@
-function [n_chan, chan_info] = get_channels(file)
+function [n_chan, chan_info, no_of_blocks] = get_channels(file)
 
     %> Determine what channels are available in a file
     
@@ -43,7 +43,9 @@ function [n_chan, chan_info] = get_channels(file)
         [PathName,name,ext] = fileparts(file);
     end
 
-
+    no_of_blocks = 1;       % default for anything other than .sdt files
+    
+    
     %cd(PathName);
     switch ext
 
@@ -61,7 +63,7 @@ function [n_chan, chan_info] = get_channels(file)
          % .sdt files %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
          case '.sdt'
             %passing -2 for the channel stops data being returned
-            [ImData Delays n_chan] = loadBHfileusingmeasDescBlock(file, -2);
+            [ImData Delays n_chan no_of_blocks] = loadBHfileusingmeasDescBlock(file, -2);
 
             if n_chan == 1
 

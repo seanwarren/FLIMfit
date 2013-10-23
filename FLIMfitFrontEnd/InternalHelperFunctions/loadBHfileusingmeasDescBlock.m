@@ -1,4 +1,5 @@
-function [ImData Delays noOfChannels] = loadBHfileusingmeasDescBlock(filename, channel, blockk)
+function [ImData Delays noOfChannels, no_of_data_blocks] = loadBHfileusingmeasDescBlock(filename, channel, blockk)
+
 
 
 % [ImData Delays noOfChannels]=loadBHFile (filename)

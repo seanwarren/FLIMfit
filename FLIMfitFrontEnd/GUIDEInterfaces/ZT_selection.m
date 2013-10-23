@@ -59,6 +59,14 @@ ZTSize = varargin{1};
 sizeZ = ZTSize(1);
 sizeT = ZTSize(2);
 
+if sizeZ == 1;
+    set(handles.uitableZ,'Visible','off');
+end
+
+if sizeT == 1;
+    set(handles.uitableT,'Visible','off');
+end
+
 handles.sizeZ = sizeZ;
 handles.sizeT = sizeT;
 
@@ -72,6 +80,19 @@ handles.maxT = maxT;
 ZTMin = varargin{3};
 handles.minZ = ZTMin(1);
 handles.minT = ZTMin(2);
+
+%optionally override Z and T text string to choose Channel & Block)
+%if length(varargin) == 4
+%    if strfind(varargin{4},'Chan')
+%        name{1} = '';
+%        name{2} = 'Channel';
+%        set(handles.uitableZ,'ColumnName',name);
+%        name{2} = 'Block';
+%        set(handles.uitableT,'ColumnName',name);
+        
+%    end
+% end
+
 
 
 dataZ(:,1) = num2cell(1:sizeZ);
