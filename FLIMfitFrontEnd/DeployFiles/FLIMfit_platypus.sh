@@ -43,13 +43,6 @@ export PATH;
 echo DYLD_LIBRARY_PATH is ${DYLD_LIBRARY_PATH};
 echo PATH is ${PATH};
 
-echo "No of arguments :$#"
-
-
-echo "$*"
-
-
-
 
   args=
   while [ $# -gt 0 ]; do
@@ -57,9 +50,6 @@ echo "$*"
       args="${args} \"${token}\"" 
       shift
   done
-
-echo "$args"
-
   eval "\"${exe_dir}/FLIMfit_MACI64.app/Contents/MacOS/FLIMfit_MACI64\"" $args
 
 
