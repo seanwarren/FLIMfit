@@ -1,8 +1,7 @@
-function [dim, data] = get_image_dimensions( file, session)
-
-% find the image size & type from a file
-
-
+ function dims = get_ZCTsize( image, modulo, sizet )
+ 
+    % returns the size in ZC & T  of an OMERO image
+ 
     % Copyright (C) 2013 Imperial College London.
     % All rights reserved.
     %
@@ -25,52 +24,33 @@ function [dim, data] = get_image_dimensions( file, session)
     % through  a studentship from the Institute of Chemical Biology 
     % and The Wellcome Trust through a grant entitled 
     % "The Open Microscopy Environment: Image Informatics for Biological Sciences" (Ref: 095931).
+ 
+          
 
-    if nargin ==1 
-        session = [];       % session NA for files (OMERO only)
-    end
-    
-    
-    dim = [];    
-    
-     
-     
-     [~,name,ext] = fileparts(file)
-     
-     % find no of channels
-     [n_chan, chan_info] = flim_data_series.get_channels(file);
-     
-     
-  
-     if ~isempty(strfind(ext,'tif'))
-        dim.FLIM_type = 'widefield';
-        
-     else
-        dim.FLIM_type = 'TCSPC';        
-     end
-        
-     % Load first file/folder to get sizes etc. 
-     
-     
-     [dim.delays,data,t_int] = load_flim_file(file); 
-     data_size = size(data)
-     
-     dim.sizeX = data_size(end -1);
-     dim.sizeY = data_size(end);
-     
-     dim.modulo = []; % NA for files
-        
-     
-    
-   
-        
-    end
-    
-    
-                  
+            pixelsList = image.copyPixels();    
+            pixels = pixelsList.get(0);
+            %
+            Z = pixels.getSizeZ().getValue();            
+            C = pixels.getSizeC().getValue();
+            T = pixels.getSizeT().getValue();
+            %
+            dims{1} = 1;
+            dims{2} = 1;
+            dims{3} = 1;
+            
+            if ~isempty(modulo)                
+                switch modulo
+                    case 'ModuloAlongZ'
+                        Z = Z/sizet;                 
+                    case 'ModuloAlongC'
+                        C = C/sizet;                                       
+                    case 'ModuloAlongT'
+                        T = T/sizet;
+                end
+            end 
+            
              
+            
+    
+          
 
-        
-    
-    
-  
