@@ -51,9 +51,9 @@ public:
    }
 
 
-   void setAcceptor(cv::Mat acceptor)
+   void setAcceptor(cv::Mat acceptor_)
    {
-      // TODO
+      acceptor = acceptor_;
    }
 
    template<typename T> T* getDataPointerForRead();
@@ -66,7 +66,6 @@ public:
    cv::Mat getIntensity();
    std::shared_ptr<FLIMImage> getRegionAsImage(cv::Mat mask);
    
-   
    const std::string& getName() { return name; }
    void setName(const std::string& name_) { name = name_; }
    DataClass getDataClass() { return data_class; }
@@ -75,7 +74,7 @@ public:
    std::shared_ptr<AcquisitionParameters> getAcquisitionParameters() const { return acq; }
    
    bool isPolarisationResolved() { return acq->polarisation_resolved; }
-   bool hasAcceptor() { return has_acceptor; }
+   bool hasAcceptor() { return !acceptor.empty(); }
    
    size_t getImageSizeInBytes() { return map_length; }
    
@@ -96,10 +95,8 @@ protected:
    std::shared_ptr<FLIMImage> getRegionAsImageImpl(cv::Mat mask);
    
    void ensureAllocated();
-   
    void waitForData();
    
-   bool has_acceptor = false;
    bool has_data = false;
    std::shared_future<void> reader_future;
    
@@ -308,7 +305,8 @@ void FLIMImage::getDecayImpl(cv::Mat mask, std::vector<std::vector<double>>& dec
    
    T* data = getDataPointerForRead<T>();
  
-   assert(mask.size() == intensity.size());
+   if (mask.size() != intensity.size())
+      throw(std::runtime_error(""));
 
    for(int i=0; i<acq->n_px; i++)
    {
