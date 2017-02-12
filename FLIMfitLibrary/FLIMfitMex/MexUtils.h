@@ -6,7 +6,7 @@
 #include <memory>
 #include <cv.h>
 
-#define AssertInputCondition(x) checkInputCondition(#x, x);
+#define AssertInputCondition(x) checkInputCondition(#x, x)
 void checkInputCondition(char* text, bool condition);
 
 std::string getStringFromMatlab(const mxArray* dat);

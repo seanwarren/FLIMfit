@@ -61,8 +61,7 @@ link_directories(${LAPACKBLAS_DIR}) # lapack doesn't give us the right path
 add_executable(TestHarness ${SOURCE} ${HEADERS} )
 
 target_link_libraries(TestHarness FLIMfit DataFitter FLIMDecayModel levmar
-                        ${LAPACKBLAS_LIB_NAMES}
-                        ${F2C_LIB_NAME}
+                        Qt5::Widgets 
                         ${OpenCV_LIBS}
                         ${Boost_LIBRARIES})
 
@@ -71,6 +70,5 @@ target_link_libraries(TestHarness FLIMfit DataFitter FLIMDecayModel levmar
 #===================================================
 #add_custom_command(TARGET TestHarness POST_BUILD
 #				   COMMAND $<TARGET_FILE:TestHarness> --result_code=no --report_level=no)
-target_link_libraries(TestHarness ${FGP_LIB} levmar ${LEVMAR_LIBRARIES})
 
 
